@@ -1,5 +1,5 @@
-Package: BiocFEDRContainer
-Title: The Bioconductor container with foreach doRedis backend for the DockerParallel package
+Package: baseFEDRContainer
+Title: The r-base container with foreach doRedis backend for the DockerParallel package
 Version: 0.99.0
 Authors@R: 
     person(given = "Jiefei",
@@ -7,7 +7,7 @@ Authors@R:
            role = c("aut", "cre"),
            email = "szwjf08@gmail.com")
 Description: 
-  Providing the Bioconductor container with foreach doRedis backend for the 
+  Providing the r-base container with foreach doRedis backend for the 
   DockerParallel package.
 License: GPL-3
 Encoding: UTF-8

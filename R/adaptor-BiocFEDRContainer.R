@@ -4,9 +4,9 @@
 #' `serverPort`, `serverPassword` and `sshPubKey` will be set in this method
 #'
 #' @inheritParams DockerParallel::configServerContainerEnv
-#' @return A `BiocFEDRContainer` object
+#' @return A `baseFEDRContainer` object
 #' @export
-setMethod("configServerContainerEnv", "BiocFEDRContainer",
+setMethod("configServerContainerEnv", "baseFEDRContainer",
           function(container, cluster, verbose = FALSE){
               if(length(container$RPackages)!=0){
                   warning("The server containder does not support installing R packages")
@@ -40,9 +40,9 @@ setMethod("configServerContainerEnv", "BiocFEDRContainer",
 #' Configure the worker container
 #'
 #' @inheritParams DockerParallel::configWorkerContainerEnv
-#' @return A `BiocFEDRContainer` object
+#' @return A `baseFEDRContainer` object
 #' @export
-setMethod("configWorkerContainerEnv", "BiocFEDRContainer",
+setMethod("configWorkerContainerEnv", "baseFEDRContainer",
           function(container, cluster, workerNumber, verbose = FALSE){
               container <- container$copy()
 
@@ -89,7 +89,7 @@ setMethod("configWorkerContainerEnv", "BiocFEDRContainer",
 #' @param ... The additional parameter that will be passed to `doRedis::registerDoRedis`
 #' @return No return value
 #' @export
-setMethod("registerParallelBackend", "BiocFEDRContainer",
+setMethod("registerParallelBackend", "baseFEDRContainer",
           function(container, cluster, verbose = FALSE, ...){
               queue <- .getJobQueueName(cluster)
               password <- .getServerPassword(cluster)
@@ -112,15 +112,15 @@ setMethod("registerParallelBackend", "BiocFEDRContainer",
               invisible(NULL)
           })
 
-#' Get the Bioconductor foreach Redis container
+#' Get the r-base foreach Redis container
 #'
-#' Get the Bioconductor foreach Redis container from the worker container
+#' Get the r-base foreach Redis container from the worker container
 #'
 #' @inheritParams DockerParallel::getServerContainer
-#' @return A `BiocFEDRContainer` server container
+#' @return A `baseFEDRContainer` server container
 #' @export
-setMethod("getServerContainer", "BiocFEDRContainer",function(workerContainer){
-    BiocFEDRServerContainer()
+setMethod("getServerContainer", "baseFEDRContainer",function(workerContainer){
+    baseFEDRServerContainer()
 })
 
 
@@ -152,9 +152,9 @@ containerExportedMethods <- c("getSysPackages", "setSysPackages", "addSysPackage
 #' @inheritParams DockerParallel::getExportedObject
 #' @inheritParams DockerParallel::getExportedNames
 #' @return For the exported function: The current package vector
-#' @rdname BiocFEDRPackages
+#' @rdname baseFEDRPackages
 #' @export
-setMethod("getExportedNames", "BiocFEDRContainer",
+setMethod("getExportedNames", "baseFEDRContainer",
           function(x){
               if(x$name == "redisRWorkerContainer")
                   containerExportedMethods
@@ -163,9 +163,9 @@ setMethod("getExportedNames", "BiocFEDRContainer",
           }
 )
 
-#' @rdname BiocFEDRPackages
+#' @rdname baseFEDRPackages
 #' @export
-setMethod("getExportedObject", "BiocFEDRContainer",
+setMethod("getExportedObject", "baseFEDRContainer",
           function(x, name){
               if(x$name != "redisRWorkerContainer"){
                 return(NULL)
