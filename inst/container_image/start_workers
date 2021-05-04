@@ -1,0 +1,54 @@
+#!/bin/bash
+## Check the environment variables
+if [ ! -z ${workerNum+x} ]
+then 
+    echo "worker number is set to $workerNum"
+else 
+    echo "The environment variable 'workerNum' is not set, use the default value 1"
+    workerNum=1
+fi
+
+
+## make done folder
+rm -r doneWorkers
+rm -r runningWorkers
+mkdir doneWorkers
+mkdir runningWorkers
+
+## Run workers until all workers are done
+retryTimes=0
+runningWorkers=0
+doneWorkers=0
+while true
+do
+    runningWorkers=$(ls runningWorkers|wc -w)
+    doneWorkers=$(ls doneWorkers|wc -w)
+
+    for ((i=1 ; i<=$workerNum ; i++)) ; do
+        if [ ! -f "doneWorkers/$i" ] && [ ! -f "runningWorkers/$i" ]; then
+            workerId=$i
+            export workerId
+            Rscript ./worker.R&
+            let retryTimes++
+            ## only the first workerNum workers will be run without waiting
+            if [[ $retryTimes -ge $workerNum ]]; then
+                sleep 1
+            fi
+        fi
+    done
+
+    if [ $(( $retryTimes % $workerNum )) -eq 0 ] || [ $doneWorkers -le $workerNum ]; then
+        echo "running workers : ${runningWorkers}, done: ${doneWorkers}"
+    fi
+
+    if [[ $retryTimes -gt 1000 ]]; then
+        break
+    fi
+    if [[ $doneWorkers -ge $workerNum ]]; then
+        break
+    fi
+    sleep 1
+done
+
+echo "The container will exit after 10 seconds"
+sleep 10
